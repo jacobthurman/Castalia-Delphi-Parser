@@ -67,7 +67,7 @@ type
   TmwBasePasLex = class(TObject)
   private
     fCommentState: TCommentState;
-    fOrigin: PChar;
+    fOrigin: PAnsiChar;
     fProcTable: array[#0..#255] of procedure of object;
     Run: Integer;
     RunAhead: Integer;
@@ -92,7 +92,7 @@ type
     fOnIfEndDirect: TDirectiveEvent;
     fOnElseIfDirect: TDirectiveEvent;
 	fOnUnDefDirect: TDirectiveEvent;
-  FDirectiveParamOrigin: PChar;
+  FDirectiveParamOrigin: PAnsiChar;
 
   	fAsmCode : Boolean;		// DR 2002-01-14
 
@@ -268,12 +268,12 @@ type
     procedure ExitDefineBlock;
     procedure CloneDefinesFrom(ALexer: TmwBasePasLex);
 
-    procedure DoProcTable(AChar: Char);
-    function IsIdentifiers(AChar: Char): Boolean;
-    function HashValue(AChar: Char): Integer;
+    procedure DoProcTable(AChar: AnsiChar);
+    function IsIdentifiers(AChar: AnsiChar): Boolean;
+    function HashValue(AChar: AnsiChar): Integer;
   protected
     procedure SetLine(const Value: string); virtual;
-    procedure SetOrigin(NewValue: PChar); virtual;
+    procedure SetOrigin(NewValue: PAnsiChar); virtual;
     procedure SetOnCompDirect(const Value: TDirectiveEvent); virtual;
     procedure SetOnDefineDirect(const Value: TDirectiveEvent); virtual;
     procedure SetOnElseDirect(const Value: TDirectiveEvent); virtual;
@@ -290,7 +290,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function CharAhead: Char;
+    function CharAhead: AnsiChar;
     procedure Next;
     procedure NextID(ID: TptTokenKind);
     procedure NextNoJunk;
@@ -313,7 +313,7 @@ type
     //Note: setting the following two properties does not GO to that line, it just sets the internal counters
     property LineNumber: Integer read fLineNumber write fLineNumber;
     property LinePos: Integer read fLinePos write fLinePos;
-    property Origin: PChar read fOrigin write SetOrigin;
+    property Origin: PAnsiChar read fOrigin write SetOrigin;
     property PosXY: TTokenPoint read GetPosXY; // !! changed to TokenPoint //jdj 7/18/1999
     property RunPos: Integer read Run write SetRunPos;
     property Token: string read GetToken;
@@ -350,7 +350,7 @@ type
 	property OnUnDefDirect: TDirectiveEvent read fOnUnDefDirect write SetOnUnDefDirect;
 
 	property AsmCode : Boolean read fAsmCode write fAsmCode; // DR 2002-01-14
-  property DirectiveParamOrigin: pchar read FDirectiveParamOrigin;
+  property DirectiveParamOrigin: PAnsiChar read FDirectiveParamOrigin;
 
     property UseDefines: Boolean read FUseDefines write FUseDefines;
 
@@ -367,7 +367,7 @@ type
     procedure SetStatus(const Value: TmwPasLexStatus);
   protected
     procedure SetLine(const Value: string); override;
-    procedure SetOrigin(NewValue: PChar); override;
+    procedure SetOrigin(NewValue: PAnsiChar); override;
     procedure SetOnCompDirect(const Value: TDirectiveEvent); override;
     procedure SetOnDefineDirect(const Value: TDirectiveEvent); override;
     procedure SetOnElseDirect(const Value: TDirectiveEvent); override;
@@ -393,11 +393,11 @@ type
 
 implementation
 
-uses Windows;
+uses Windows, AnsiStrings;
 
 procedure MakeIdentTable;
 var
-  I, J: Char;
+  I, J: AnsiChar;
 begin
   for I := #0 to #255 do
   begin
@@ -408,12 +408,12 @@ begin
     J := UpperCase(I)[1];
     case I of
 	  'a'..'z', 'A'..'Z', '_': mHashTable[I] := Ord(J) - 64;
-    else mHashTable[Char(I)] := 0;
+    else mHashTable[AnsiChar(I)] := 0;
     end;
   end;
 end;
 
-function TmwBasePasLex.CharAhead: Char;
+function TmwBasePasLex.CharAhead: AnsiChar;
 begin
   RunAhead := Run;
 //  while fOrigin[RunAhead] in [#1..#32] do
@@ -602,7 +602,7 @@ end; { KeyHash }
 function TmwBasePasLex.KeyComp(const aKey: string): Boolean;
 var
   I: Integer;
-  Temp: PChar;
+  Temp: PAnsiChar;
 begin
   if Length(aKey) = TokenLen then
   begin
@@ -690,7 +690,7 @@ end;
 function TmwBasePasLex.Func30: TptTokenKind;
 begin
   Result := ptIdentifier;
-  if KeyComp('Char') then fExID := ptChar;
+  if KeyComp('AnsiChar') then fExID := ptChar;
 end;
 
 function TmwBasePasLex.Func32: TptTokenKind;
@@ -790,7 +790,7 @@ end;
 function TmwBasePasLex.Func46: TptTokenKind;
 begin
   Result := ptIdentifier;
-  if KeyComp('PChar') then fExId := ptPChar
+  if KeyComp('PAnsiChar') then fExId := ptPChar
   {$IFDEF D8_NEWER} //JThurman 2004-03-19
    else
     if KeyComp('Sealed') then Result := ptSealed;
@@ -1276,7 +1276,7 @@ end;
 
 procedure TmwBasePasLex.MakeMethodTables;
 var
-  I: Char;
+  I: AnsiChar;
 begin
   for I := #0 to #255 do
     case I of
@@ -1346,7 +1346,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TmwBasePasLex.DoProcTable(AChar: Char);
+procedure TmwBasePasLex.DoProcTable(AChar: AnsiChar);
 begin
   if AChar <= #255 then
     fProcTable[AChar]
@@ -1358,7 +1358,7 @@ end;
 
 { Destroy }
 
-procedure TmwBasePasLex.SetOrigin(NewValue: PChar);
+procedure TmwBasePasLex.SetOrigin(NewValue: PAnsiChar);
 begin
   fOrigin := NewValue;
   Init;
@@ -1716,7 +1716,7 @@ begin
   end;
 end;
 
-function TmwBasePasLex.HashValue(AChar: Char): Integer;
+function TmwBasePasLex.HashValue(AChar: AnsiChar): Integer;
 begin
   if AChar <= #255 then
     Result := mHashTable[fOrigin[Run]]
@@ -1742,7 +1742,7 @@ begin
   Result := FDefines.IndexOf(ADefine) > -1;
 end;
 
-function TmwBasePasLex.IsIdentifiers(AChar: Char): Boolean;
+function TmwBasePasLex.IsIdentifiers(AChar: AnsiChar): Boolean;
 begin
   if AChar <= #255 then
     Result := Identifiers[AChar]
@@ -1822,7 +1822,7 @@ begin
   fTokenID := ptPointerSymbol;
   
   //This is a wierd Pascal construct that rarely appears, but needs to be 
-  //supported. ^M is a valid char reference (#13, in this case)
+  //supported. ^M is a valid AnsiChar reference (#13, in this case)
   if FOrigin[Run] in ['a'..'z','A'..'Z'] then
   begin
     inc(Run);
@@ -2138,7 +2138,7 @@ begin
      (*{$IFDEF D10_NEWER}
      if fOrigin[Run] < #256 then
        fProcTable[fOrigin[Run]]
-     else //non-ASCII unicode char
+     else //non-ASCII unicode AnsiChar
        IdentProc;
      {$ELSE}
      fProcTable[fOrigin[Run]];
@@ -2440,7 +2440,7 @@ end;
 
 procedure TmwBasePasLex.SetLine(const Value: string);
 begin
-  fOrigin := PChar(Value);
+  fOrigin := PAnsiChar(Value);
   InitLine;
   Next;
 end;
@@ -2545,7 +2545,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TmwPasLex.SetOrigin(NewValue: PChar);
+procedure TmwPasLex.SetOrigin(NewValue: PAnsiChar);
 begin
   inherited SetOrigin(NewValue);
   fAheadLex.SetOrigin(NewValue);
