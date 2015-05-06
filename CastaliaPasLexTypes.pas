@@ -277,7 +277,7 @@ TmwPasLexStatus = record
   ExID: TptTokenKind;
   LineNumber: Integer;
   LinePos: Integer;
-  Origin: PChar;
+  Origin: PAnsiChar;
   RunPos: Integer;
   TokenPos: Integer;
   TokenID: TptTokenKind;

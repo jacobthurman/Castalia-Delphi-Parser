@@ -209,11 +209,11 @@ type
 
 
     FTopDefineRec: PDefineRec;
-    procedure EnterDefineBlock(ADefined: Boolean);
-    procedure ExitDefineBlock;
+    //procedure EnterDefineBlock(ADefined: Boolean);
+    //procedure ExitDefineBlock;
     procedure ClearDefines;
 
-    procedure InitAhead;
+    //procedure InitAhead;
 
   protected
     FDefineStack: Integer;
@@ -801,9 +801,6 @@ begin
 end;
 
 procedure TmwSimplePasPar.HandlePtElseIfDirect(Sender: TmwBasePasLex);
-var
-  Param: string;
-  Def: string;
 begin
 //  if FUseDefines then
 //  begin
@@ -869,9 +866,6 @@ begin
 end;
 
 procedure TmwSimplePasPar.HandlePtIfDirect(Sender: TmwBasePasLex);
-var
-  Def: string;
-  Param: string;
 begin
 //  Param := Sender.DirectiveParam;
 //  if FUseDefines then
@@ -5930,12 +5924,12 @@ begin
   end;
 end;
 
-procedure TmwSimplePasPar.InitAhead;
+{procedure TmwSimplePasPar.InitAhead;
 begin
   if AheadParse = nil then
     AheadParse := TmwSimplePasPar.Create;
   AheadParse.Lexer.InitFrom(Lexer);
-end;
+end;}
 
 procedure TmwSimplePasPar.InitDefines;
 begin
@@ -5985,7 +5979,7 @@ begin
 //  {$ENDIF}
 end;
 
-procedure TmwSimplePasPar.EnterDefineBlock(ADefined: Boolean);
+{procedure TmwSimplePasPar.EnterDefineBlock(ADefined: Boolean);
 var
   StackFrame: PDefineRec;
 begin
@@ -6015,9 +6009,9 @@ begin
 //    if TokenID = ptNull then
 //      Break;
 //  end;
-end;
+end;}
 
-procedure TmwSimplePasPar.ExitDefineBlock;
+{procedure TmwSimplePasPar.ExitDefineBlock;
 var
   StackFrame: PDefineRec;
 begin
@@ -6029,7 +6023,7 @@ begin
     FTopDefineRec := StackFrame^.Next;
     Dispose(StackFrame);
   end;
-end;
+end;}
 
 {$IFDEF D8_NEWER} //JThurman 2004-03-03
 
