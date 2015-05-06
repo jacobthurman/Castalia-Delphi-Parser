@@ -103,7 +103,7 @@ type
 
 	  function KeyHash: Integer;
     function KeyComp(const aKey: string): Boolean;
-    function Func9: tptTokenKind;
+    //function Func9: tptTokenKind;
     function Func15: TptTokenKind;
     function Func19: TptTokenKind;
     function Func20: TptTokenKind;
@@ -621,12 +621,12 @@ begin
   else Result := False;
 end; { KeyComp }
 
-function TmwBasePasLex.Func9: tptTokenKind;
+{function TmwBasePasLex.Func9: tptTokenKind;
 begin
   Result := ptIdentifier;
   if KeyComp('Add') then
     FExID := ptAdd;
-end;
+end;}
 
 function TmwBasePasLex.Func15: TptTokenKind;
 begin
@@ -2440,7 +2440,7 @@ end;
 
 procedure TmwBasePasLex.SetLine(const Value: string);
 begin
-  fOrigin := PAnsiChar(Value);
+  fOrigin := PAnsiChar(AnsiString(Value));
   InitLine;
   Next;
 end;
